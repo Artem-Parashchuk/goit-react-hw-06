@@ -1,12 +1,25 @@
+import { useDispatch, useSelector } from "react-redux";
+
 import s from "./ContactList.module.css";
 import Contact from "../Contact/Contact";
-const ContactList = ({ cards, onDelete }) => {
+import { deleteContacts, selectContacts } from "../../redux/contactsSlice";
+import { selectFilter } from "../../redux/filtersSlice";
+
+const ContactList = () => {
+  const cards = useSelector(selectContacts)
+  const filterText = useSelector(selectFilter) || ''
+  const dispatch = useDispatch()
+
+  const filteredCards = cards.filter(item => {
+   return item.name && item.name.toLowerCase().includes(filterText.toLowerCase())
+  })
+
   return (
     <ul className={s.list}>
-      {cards.length > 0 ? (
-        cards.map((item) => (
+      {filteredCards.length > 0 ? (
+        filteredCards.map((item) => (
           <Contact
-            onDelete={onDelete}
+            onDelete={() => dispatch(deleteContacts(item.id))}
             key={item.id}
             {...item}
           />

@@ -1,12 +1,16 @@
+import { useDispatch } from "react-redux";
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import { nanoid } from "nanoid";
 import * as Yup from "yup";
+
 import s from "./ContactForm.module.css";
-const ContactForm = ({ onAdd }) => {
-  const initialValue = {
-    name: "",
-    number: "",
-    id: nanoid(),
+import { addContact } from "../../redux/contactsSlice";
+
+const ContactForm = () => {
+  const dispatch = useDispatch();
+
+  const handleSubmit = (values, option) => {
+    dispatch(addContact(values));
+    option.resetForm();
   };
 
   const formSchema = Yup.object({
@@ -20,18 +24,12 @@ const ContactForm = ({ onAdd }) => {
       .max(50, "Номер має бути не більше 50 символів"),
   });
 
-  const handleSubmit = (values, option) => {
-    const contact = { ...values, id: nanoid() };
-    onAdd(contact);
-    option.resetForm();
-  };
-
   return (
     <div className={s.form_wrap}>
       <Formik
         onSubmit={handleSubmit}
         validationSchema={formSchema}
-        initialValues={initialValue}
+        initialValues={{ name: "", number: "" }}
       >
         <Form className={s.form}>
           <label className={s.label}>
